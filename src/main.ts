@@ -6,8 +6,6 @@ import { WinstonModule } from 'nest-winston';
 import { transports, format } from 'winston';
 import 'winston-daily-rotate-file';
 import { join } from 'path';
-import { ValidationPipe } from '@nestjs/common';
-const fs = require('fs');
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, {
@@ -39,6 +37,7 @@ async function bootstrap() {
     //     whitelist: true,
     //     transform: true,
     // }));
+    // app.useStaticAssets(join(__dirname, '..', 'public'));
     app.use(json({ limit: '50mb' }));
     app.use(urlencoded({ extended: true, limit: '50mb' }));
     app.setGlobalPrefix('api');

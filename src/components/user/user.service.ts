@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -12,9 +13,9 @@ export class UserService {
     ) { }
 
     async create(createUserDto: CreateUserDto) {
-        let userNameExist = await this.usersRepository.exist({ where: { login: createUserDto.userName } })
+        let loginExist = await this.usersRepository.exist({ where: { login: createUserDto.login } })
         let emailExist = await this.usersRepository.exist({ where: { email: createUserDto.email } })
-        if (userNameExist) throw new HttpException('Користувач з таким логіном вже існує', HttpStatus.BAD_REQUEST);
+        if (loginExist) throw new HttpException('Користувач з таким логіном вже існує', HttpStatus.BAD_REQUEST);
         if (emailExist) throw new HttpException('Користувач з таким email вже існує', HttpStatus.BAD_REQUEST);
         let user = this.usersRepository.create({ ...createUserDto as any });
         return await this.usersRepository.save(user);
@@ -32,7 +33,9 @@ export class UserService {
         return await this.usersRepository.findOneBy({ id });
     }
 
-    update(updateUserDto: UpdateUserDto) {
+    async update(updateUserDto: UpdateUserDto) {
+        if (updateUserDto.password)
+            updateUserDto.password = await bcrypt.hash(updateUserDto.password, 12);
         return this.usersRepository.save({ ...updateUserDto as any }, { reload: true })
     }
 

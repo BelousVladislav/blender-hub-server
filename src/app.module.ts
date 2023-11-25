@@ -18,7 +18,15 @@ import { conn } from './ormconfig';
 import { AdminModule } from '@adminjs/nestjs';
 import * as AdminJSTypeorm from '@adminjs/typeorm';
 import AdminJS from 'adminjs';
-import { WorkerModule } from './worker/worker.module';
+import { WorkerModule } from './components/worker/worker.module';
+import { Worker } from './components/worker/entities/worker.entity';
+import { ProjectModule } from './components/project/project.module';
+import { Project } from './components/project/entities/project.entity';
+import { RenderModule } from './components/render/render.module';
+import { Status } from './components/status/entities/status.entity';
+import { Render } from './components/render/entities/render.entity';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 AdminJS.registerAdapter({
     Resource: AdminJSTypeorm.Resource,
@@ -39,7 +47,39 @@ AdminJS.registerAdapter({
                 adminJsOptions: {
                     rootPath: '/admin',
                     resources: [
-                        User
+                        {
+                            resource: Worker,
+                            options: {
+                                showProperties: [
+                                    'id',
+                                    'blenderVersion',
+                                    'os',
+                                    'gpuName',
+                                    'donate',
+                                    'userId',
+                                    'isOnline',
+                                    'currSocketId'
+                                ],
+                                editProperties: [
+                                    'id',
+                                    'blenderVersion',
+                                    'os',
+                                    'gpuName',
+                                    'donate',
+                                    'userId',
+                                    'isOnline',
+                                    'currSocketId'
+                                ],
+                                sort: {
+                                    sortBy: 'id',
+                                    direction: 'asc',
+                                },
+                            }
+                        },
+                        User,
+                        Project,
+                        Render,
+                        Status
                     ],
                 },
                 // auth: {
@@ -53,6 +93,9 @@ AdminJS.registerAdapter({
                 //     secret: 'secret'
                 // },
             }),
+        }),
+        ServeStaticModule.forRoot({
+            rootPath: join(process.cwd(), 'rendered')
         }),
         UserModule,
         AuthModule,
@@ -68,6 +111,8 @@ AdminJS.registerAdapter({
             }),
             inject: [ConfigService],
         }),
+        ProjectModule,
+        RenderModule
         // SocketModule
     ],
     controllers: [AppController],
