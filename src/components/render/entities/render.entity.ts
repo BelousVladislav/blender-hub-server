@@ -6,13 +6,14 @@ import { Worker } from '../../worker/entities/worker.entity';
 import { Project } from '../../project/entities/project.entity';
 import { User } from '../../user/entities/user.entity';
 import { Status } from '../../status/entities/status.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'renders' })
 export class Render extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => Project, (project) => project.renders)
+    @ManyToOne(() => Project, (project) => project.renders, { onDelete: 'CASCADE' })
     project: Project;
 
     @IsNotEmpty({ "message": "projectId field cannot be empty" })

@@ -2,7 +2,10 @@
 import { Controller, Request, Post, UseGuards, Get, Body, Param } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { WorkerService } from './worker.service';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiBearerAuth()
+@ApiTags('worker')
 @Controller('worker')
 export class WorkerController {
     constructor(private workerService: WorkerService) { }

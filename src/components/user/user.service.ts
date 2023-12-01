@@ -17,6 +17,7 @@ export class UserService {
         let emailExist = await this.usersRepository.exist({ where: { email: createUserDto.email } })
         if (loginExist) throw new HttpException('Користувач з таким логіном вже існує', HttpStatus.BAD_REQUEST);
         if (emailExist) throw new HttpException('Користувач з таким email вже існує', HttpStatus.BAD_REQUEST);
+        createUserDto.password = await bcrypt.hash(createUserDto.password, 10);
         let user = this.usersRepository.create({ ...createUserDto as any });
         return await this.usersRepository.save(user);
     }
@@ -35,7 +36,7 @@ export class UserService {
 
     async update(updateUserDto: UpdateUserDto) {
         if (updateUserDto.password)
-            updateUserDto.password = await bcrypt.hash(updateUserDto.password, 12);
+            updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
         return this.usersRepository.save({ ...updateUserDto as any }, { reload: true })
     }
 

@@ -47,6 +47,10 @@ export class RenderService {
             .execute();
     }
 
+    async donwloadFile(path: string) {
+
+    }
+
     async uploadRenderedFileFromWorker(renderId: number, file: any) {
         let render = await this.renderRepository.findOneBy({ id: renderId });
         let fileName = render.inFileUUIDName.substring(0, render.inFileUUIDName.indexOf('.')) + file.originalname.substring(file.originalname.indexOf('.'))
@@ -60,6 +64,19 @@ export class RenderService {
     }
 
     async remove(id: number) {
+        let render = await this.findById(id);
+        if (render) {
+            if (render.inFileUUIDName) {
+                let blendFilePath = join(process.cwd(), 'upload', render.inFileUUIDName);
+                if (fs.existsSync(blendFilePath))
+                    fs.unlinkSync(blendFilePath);
+            }
+            if (render.outFileUUIDName) {
+                let outRendFilePath = join(process.cwd(), 'rendered', render.outFileUUIDName);
+                if (fs.existsSync(outRendFilePath))
+                    fs.unlinkSync(outRendFilePath)
+            }
+        }
         await this.renderRepository.delete(id);
     }
 }

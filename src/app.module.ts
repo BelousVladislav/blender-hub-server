@@ -27,11 +27,25 @@ import { Status } from './components/status/entities/status.entity';
 import { Render } from './components/render/entities/render.entity';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { CommentModule } from './components/comment/comment.module';
+import { Comment } from './components/comment/entities/comment.entity';
 
 AdminJS.registerAdapter({
     Resource: AdminJSTypeorm.Resource,
     Database: AdminJSTypeorm.Database,
 });
+
+const DEFAULT_ADMIN = {
+    email: 'sa',
+    password: 'Sa121218',
+}
+
+const authenticate = async (email: string, password: string) => {
+    if (email === DEFAULT_ADMIN.email && password === DEFAULT_ADMIN.password) {
+        return Promise.resolve(DEFAULT_ADMIN)
+    }
+    return null
+}
 
 @Module({
     imports: [
@@ -79,19 +93,20 @@ AdminJS.registerAdapter({
                         User,
                         Project,
                         Render,
-                        Status
+                        Status,
+                        Comment
                     ],
                 },
-                // auth: {
-                //     authenticate,
-                //     cookieName: 'adminjs',
-                //     cookiePassword: 'secret'
-                // },
-                // sessionOptions: {
-                //     resave: true,
-                //     saveUninitialized: true,
-                //     secret: 'secret'
-                // },
+                auth: {
+                    authenticate,
+                    cookieName: 'adminjs',
+                    cookiePassword: 'secret'
+                },
+                sessionOptions: {
+                    resave: true,
+                    saveUninitialized: true,
+                    secret: 'secret'
+                },
             }),
         }),
         ServeStaticModule.forRoot({
@@ -112,7 +127,8 @@ AdminJS.registerAdapter({
             inject: [ConfigService],
         }),
         ProjectModule,
-        RenderModule
+        RenderModule,
+        CommentModule
         // SocketModule
     ],
     controllers: [AppController],

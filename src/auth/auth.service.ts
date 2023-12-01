@@ -16,7 +16,7 @@ export class AuthService {
     async validateUser(login: string, pass: string): Promise<any> {
         const user = await this.usersService.findOneBy({ "login": login });
         if (!user) throw new HttpException('Користувача не існує', HttpStatus.NOT_FOUND);
-        if (user && bcrypt.compare(user.password, await bcrypt.hash(pass, 10))) {
+        if (user && await bcrypt.compare(pass, user.password)) {
             const { password, ...result } = user;
             return result;
         }
@@ -24,7 +24,6 @@ export class AuthService {
     }
 
     async login(user: any) {
-        console.log(user)
         const payload = {
             user: {
                 id: user.id,
@@ -32,7 +31,6 @@ export class AuthService {
                 login: user.login
             }
         };
-        console.log(payload)
         return {
             access_token: this.jwtService.sign(payload, { secret: this.configService.get<string>('jwtConf.secret') }),
         }

@@ -6,6 +6,7 @@ import { WinstonModule } from 'nest-winston';
 import { transports, format } from 'winston';
 import 'winston-daily-rotate-file';
 import { join } from 'path';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, {
@@ -33,6 +34,15 @@ async function bootstrap() {
             ],
         }),
     });
+
+    const config = new DocumentBuilder()
+        .setTitle('FreeBlender API')
+        .setDescription('FreeBlender API')
+        .setVersion('1.0')
+        .addTag('renders')
+        .build();
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, document);
     // app.useGlobalPipes(new ValidationPipe({
     //     whitelist: true,
     //     transform: true,
@@ -46,5 +56,6 @@ async function bootstrap() {
     await app.listen(port);
     console.log(process.env.NODE_ENV);
     console.info(`Application is running on: ${await app.getUrl()}/api`);
+    console.info(`Application is running on: ${await app.getUrl()}/admin`);
 }
 bootstrap();

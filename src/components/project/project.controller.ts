@@ -4,7 +4,11 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { JwtAuthGuard } from '../../auth/guard/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { isNumber } from 'class-validator';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiBearerAuth()
+@ApiTags('project')
 @Controller('project')
 export class ProjectController {
     constructor(private readonly projectService: ProjectService) { }
@@ -51,6 +55,18 @@ export class ProjectController {
         @Param('projectId') projectId: string
     ) {
         return this.projectService.uploadBlenderFileForRender(+projectId, file)
+    }
+
+    @Post('uploadFileFromBlender/:projectId/:uuidToken')
+    @UseInterceptors(FileInterceptor('file'))
+    uploadFileFromBlender(
+        @UploadedFile() file: Express.Multer.File,
+        @Param('projectId') projectId: string,
+        @Param('uuidToken') uuidToken: string
+    ) {
+        if (!isNumber(+projectId))
+            return new HttpException('ProjectId has been number', HttpStatus.BAD_REQUEST);
+        return this.projectService.uploadFileFromBlender(+projectId, uuidToken, file);
     }
 
     @UseGuards(JwtAuthGuard)

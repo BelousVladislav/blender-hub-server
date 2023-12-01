@@ -10,13 +10,15 @@ import { WorkerService } from '../worker/worker.service';
 import { Worker } from '../worker/entities/worker.entity';
 import { UserService } from '../user/user.service';
 import { WorkerModule } from '../worker/worker.module';
+import { CommentService } from '../comment/comment.service';
+import { Comment } from '../comment/entities/comment.entity';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([Project, User, Render]),
+        TypeOrmModule.forFeature([Project, User, Render, Comment]),
         WorkerModule
     ],
     controllers: [ProjectController],
-    providers: [ProjectService, RenderService, UserService],
+    providers: [ProjectService, RenderService, UserService, CommentService],
 })
 export class ProjectModule { }

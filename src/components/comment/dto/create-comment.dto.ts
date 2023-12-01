@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateUserDto {
+export class CreateCommentDto {
     @ApiProperty()
-    login: string;
+    description: string;
     @ApiProperty()
-    email: string;
+    projectId: number;
     @ApiProperty()
-    password: string;
+    userId: string;
 }

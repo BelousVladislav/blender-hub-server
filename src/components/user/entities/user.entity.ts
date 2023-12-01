@@ -5,6 +5,7 @@ import { IsEmail, IsNotEmpty } from 'class-validator';
 import { Worker } from '../../worker/entities/worker.entity';
 import { Project } from '../../project/entities/project.entity';
 import { Render } from '../../render/entities/render.entity';
+import { Comment } from '../../comment/entities/comment.entity';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
@@ -36,8 +37,8 @@ export class User extends BaseEntity {
     @OneToMany(() => Project, (project) => project.user)
     projects: Project[];
 
-    // @OneToMany(() => Render, (render) => render.user)
-    // renders: Worker[];
+    @OneToMany(() => Comment, (comment) => comment.user)
+    comments: Comment[];
 
     @CreateDateColumn({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
